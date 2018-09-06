@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Evos
+Comment=Evos P2P Cryptocurrency
+Comment[fr]=Evos, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Evos, eşten eşe kriptografik sanal para birimi
+Exec=evos-qt %u
+Terminal=false
+Type=Application
+Icon=evos128
+MimeType=x-scheme-handler/evos;
+Categories=Office;Finance;

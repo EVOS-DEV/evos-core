@@ -1,0 +1,6 @@
+usr/local/bin/evos-qt usr/bin
+share/pixmaps/bitcoin32.xpm usr/share/pixmaps
+share/pixmaps/bitcoin16.xpm usr/share/pixmaps
+share/pixmaps/bitcoin128.png usr/share/pixmaps
+debian/evos-qt.desktop usr/share/applications
+debian/evos-qt.protocol usr/share/kde4/services/

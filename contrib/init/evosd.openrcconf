@@ -1,0 +1,26 @@
+# /etc/conf.d/evosd: config file for /etc/init.d/evosd
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/evos/evos.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/evosd"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/evosd.pid"
+
+# Where to write evosd data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/evosd"
+
+# User and group to own evosd process
+#BITCOIND_USER="evos"
+#BITCOIND_GROUP="evos"
+
+# Path to evosd executable
+#BITCOIND_BIN="/usr/bin/evosd"
+
+# Nice value to run evosd under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCOIND_OPTS=""

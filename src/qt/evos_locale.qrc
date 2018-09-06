@@ -1,0 +1,30 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/evos_bg.qm</file>
+        <file alias="ca">locale/evos_ca.qm</file>
+        <file alias="cs">locale/evos_cs.qm</file>
+        <file alias="da">locale/evos_da.qm</file>
+        <file alias="de">locale/evos_de.qm</file>
+        <file alias="en">locale/evos_en.qm</file>
+        <file alias="en_US">locale/evos_en_US.qm</file>
+        <file alias="es">locale/evos_es.qm</file>
+        <file alias="fi">locale/evos_fi.qm</file>
+        <file alias="fr_FR">locale/evos_fr_FR.qm</file>
+        <file alias="hr">locale/evos_hr.qm</file>
+        <file alias="it">locale/evos_it.qm</file>
+        <file alias="ja">locale/evos_ja.qm</file>
+        <file alias="ko_KR">locale/evos_ko_KR.qm</file>
+        <file alias="nl">locale/evos_nl.qm</file>
+        <file alias="pl">locale/evos_pl.qm</file>
+        <file alias="pt">locale/evos_pt.qm</file>
+        <file alias="pt_BR">locale/evos_pt_BR.qm</file>
+        <file alias="ro_RO">locale/evos_ro_RO.qm</file>
+        <file alias="ru">locale/evos_ru.qm</file>
+        <file alias="sk">locale/evos_sk.qm</file>
+        <file alias="sv">locale/evos_sv.qm</file>
+        <file alias="tr">locale/evos_tr.qm</file>
+        <file alias="uk">locale/evos_uk.qm</file>
+        <file alias="zh_CN">locale/evos_zh_CN.qm</file>
+        <file alias="zh_TW">locale/evos_zh_TW.qm</file>
+    </qresource>
+</RCC>

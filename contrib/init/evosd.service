@@ -1,0 +1,26 @@
+[Unit]
+Description=evos's distributed currency daemon
+After=network.target
+
+[Service]
+User=evos
+Group=evos
+
+Type=forking
+PIDFile=/var/lib/evosd/evosd.pid
+
+ExecStart=/usr/bin/evosd -daemon -pid=/var/lib/evosd/evosd.pid \
+          -conf=/etc/evos/evos.conf -datadir=/var/lib/evosd
+
+ExecStop=-/usr/bin/evos-cli -conf=/etc/evos/evos.conf \
+         -datadir=/var/lib/evosd stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
