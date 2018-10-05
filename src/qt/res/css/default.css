@@ -1047,7 +1047,6 @@ font-size:14px;
 QWidget .QFrame#frame .QLabel#labelImmature { /* Immature Balance */
 qproperty-alignment: 'AlignVCenter | AlignLeft';
 font-size:12px;
-margin-left:16px;
 color: #229c86;
 font-weight:bold;
 }
