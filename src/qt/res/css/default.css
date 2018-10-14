@@ -867,7 +867,19 @@ color:#43d6bb;
 }
 
 QDialog#RPCConsole QTableView#peerWidget::item { /* Peers Table Items */
-color:#004d39;
+color:#43d6bb;
+}
+
+QDialog#RPCConsole QTableView#peerWidget::item:selected { /* Peers Table Items */
+color:white;
+}
+
+QDialog#RPCConsole QHeaderView::section:horizontal { /* Peers Table Items */
+color:white;
+border-bottom :1px solid #43d6bb;
+border-top :1px solid #43d6bb;
+border-left :1px solid #43d6bb;
+border-right :1px solid #43d6bb;
 }
 
 QDialog#RPCConsole QPushButton#openDebugLogfileButton {
