@@ -56,6 +56,7 @@ using namespace libzerocoin;
 #define SCRIPT_OFFSET 6
 // For Script size (BIGNUM/Uint256 size)
 #define BIGNUM_SIZE   4
+#define MAX_BLOCK_TXS 300
 /**
  * Global state
  */
@@ -4190,6 +4191,11 @@ bool IsTransactionInChain(uint256 txId, int& nHeightTx)
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex* const pindexPrev)
 {
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
+    
+    LogPrintf("ContextualCheckBlock: included %d transactions in block\n", block.vtx.size());
+    if(block.vtx.size() > MAX_BLOCK_TXS)
+        return state.DoS(50, error("ContextualCheckBlock() : block contains too many txs"),
+            REJECT_INVALID, "too-many-txs");
 
     // Check that all transactions are finalized
     BOOST_FOREACH (const CTransaction& tx, block.vtx)
@@ -4289,53 +4295,50 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
-    if (block.IsProofOfStake()) {
-        LOCK(cs_main);
+if (block.IsProofOfStake()) {
+		LOCK(cs_main);
 
-         CCoinsViewCache coins(pcoinsTip);
+		CCoinsViewCache coins(pcoinsTip);
+		
+		if (!block.vtx[1].IsCoinStake() && !coins.HaveInputs(block.vtx[1])) {
+			// the inputs are spent at the chain tip so we should look at the recently spent outputs
 
-         if (!coins.HaveInputs(block.vtx[1])) {
-            // the inputs are spent at the chain tip so we should look at the recently spent outputs
+			for (CTxIn in : block.vtx[1].vin) {
+				auto it = mapStakeSpent.find(in.prevout);
+				if (it->second <= pindexPrev->nHeight) {
+					
+					LogPrintf("AcceptBlock: found spent input %s at height %d before height %d\n",(it->first).ToString(), it->second, pindexPrev->nHeight);
+					LogPrintf("block in question: %s\n", block.ToString());
+			
+					return error("Function %s, fake PoS fix - input was already spent\n", __func__);
+				}
+			}
+		}
 
-             for (CTxIn in : block.vtx[1].vin) {
-                auto it = mapStakeSpent.find(in.prevout);
-                if (it == mapStakeSpent.end()) {
-                    return false;
+		// if this is on a fork
+		int nCheckedBlocks = 0;
+
+        bool isBlockFromFork = pindexPrev != nullptr && chainActive.Tip() != pindexPrev;
+        
+        if (isBlockFromFork) {
+			LogPrintf("Function %s, fake PoS fix - found block is not in the active chain\n", __func__);
+
+			//while that block is not on the main chain
+			CBlockIndex *last = pindexPrev;
+            while (!chainActive.Contains(last)) {
+				// go to the parent block
+				last = last->pprev;
+				++nCheckedBlocks;
+				// Check if the forked chain is longer than the max reorg limit
+                if (nCheckedBlocks == Params().MaxReorganizationDepth()) {
+                    // the alternative chain is too long, reject
+                    return error("%s: forked chain longer than maximum reorg limit", __func__);
                 }
-                if (it->second <= pindexPrev->nHeight) {
-                    return false;
-                }
-            }
-        }
-
-         // if this is on a fork
-        if (!chainActive.Contains(pindexPrev) && pindexPrev != NULL) {
-            // start at the block we're adding on to
-            CBlockIndex *last = pindexPrev;
-
-             // while that block is not on the main chain
-            while (!chainActive.Contains(last) && pindexPrev != NULL) {
-                CBlock bl;
-                ReadBlockFromDisk(bl, last);
-                // loop through every spent input from said block
-                for (CTransaction t : bl.vtx) {
-                    for (CTxIn in: t.vin) {
-                        // loop through every spent input in the staking transaction of the new block
-                        for (CTxIn stakeIn : block.vtx[1].vin) {
-                            // if they spend the same input
-                            if (stakeIn.prevout == in.prevout) {
-                                // reject the block
-                                return false;
-                            }
-                        }
-                    }
-                }
-
-
-                 // go to the parent block
-                last = pindexPrev->pprev;
-            }
-        }
+			}
+			
+			LogPrintf("%s: fake PoS fix - forked chain found and accepted, number of blocks from split: %d\n", __func__, nCheckedBlocks+1);
+		}
+        
     }
 
     // Write block to history file
@@ -6390,8 +6393,9 @@ int ActiveProtocol()
     // own ModifierUpgradeBlock()
 
     if (IsSporkActive(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2))
-            return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
-    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
+        return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+    else
+		return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
 // requires LOCK(cs_vRecvMsg)
