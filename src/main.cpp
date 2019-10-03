@@ -3996,6 +3996,11 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 		LogPrintf("CheckBlock() : height=%d stake_tx_height=%d required_confirmations=%d got=%d\n", chainActive.Tip()->nHeight, pindex->nHeight, STAKE_MIN_CONF, chainActive.Tip()->nHeight - pindex->nHeight);
 		if (chainActive.Tip()->nHeight - pindex->nHeight < STAKE_MIN_CONF)
 			return state.DoS(100, error("CheckBlock() : stake under min. required confirmations"));
+			
+		//enable minimum stake amount
+		if (IsSporkActive(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) && !IsInitialBlockDownload() && txPrev.vout[block.vtx[1].vin[0].prevout.n].nValue < Params().StakeInputMinimal()) {
+			return state.DoS(100, error("CheckBlock() : stake input below minimum value"));
+		}
     }
 
     // ----------- swiftTX transaction scanning -----------
@@ -4193,7 +4198,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
     
     LogPrintf("ContextualCheckBlock: included %d transactions in block\n", block.vtx.size());
-    if(block.vtx.size() > MAX_BLOCK_TXS)
+    if(!IsInitialBlockDownload() && block.vtx.size() > MAX_BLOCK_TXS)
         return state.DoS(50, error("ContextualCheckBlock() : block contains too many txs"),
             REJECT_INVALID, "too-many-txs");
 

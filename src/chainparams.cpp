@@ -122,6 +122,8 @@ public:
         nMaturity = 120;
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 120000000 * COIN; //120,000,000
+        nStakeInputMinimal = 100 * COIN;
+
 
         /** Height or Time Based Activations **/
         nLastPOWBlock = 1199;

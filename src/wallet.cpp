@@ -1762,6 +1762,10 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
        //make sure not to outrun target amount
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
+            
+        //check for minimal stake input after fork
+        if (IsSporkActive(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) && out.tx->vout[out.i].nValue < Params().StakeInputMinimal())
+            continue;
 
         //if zerocoinspend, then use the block time
         int64_t nTxTime = out.tx->GetTxTime();

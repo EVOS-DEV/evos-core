@@ -120,6 +120,8 @@ public:
     
     static std::string GetDevFeeRewardAddress();
 	static CScript GetScriptForDefFeeDestination();
+	CAmount StakeInputMinimal() const { return nStakeInputMinimal; }
+
 
 protected:
     CChainParams() {}
@@ -177,6 +179,7 @@ protected:
     int nBlockLastGoodCheckpoint;
     int nZerocoinStartTime;
     int nAccumulatorStartHeight;
+    CAmount nStakeInputMinimal;
 };
 
 /**
